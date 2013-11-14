@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import sys
+
 from irc.bot import SingleServerIRCBot
 
 
@@ -26,21 +28,22 @@ class IRCBot(SingleServerIRCBot):
 
 
 def main():
-    import sys
-    if len(sys.argv) != 4:
-        print("Usage: bot <server[:port]> <channel> <nickname>")
+    if len(sys.argv) < 4 or len(sys.argv) > 5:
+        print("Usage: ./bot <server[:port]> <channel> <nickname> [server_password]")
         sys.exit(1)
 
-    s = sys.argv[1].split(":", 1)
-    server = s[0]
-    if len(s) == 2:
+    server_and_port = sys.argv[1].split(":", 1)
+    server = server_and_port[0]
+
+    if len(server_and_port) == 2:
         try:
-            port = int(s[1])
+            port = int(server_and_port[1])
         except ValueError:
             print("Error: Erroneous port.")
             sys.exit(1)
     else:
         port = 6667
+
     channel = sys.argv[2]
     nickname = sys.argv[3]
 
