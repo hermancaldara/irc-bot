@@ -1,0 +1,51 @@
+#!/usr/bin/env python
+
+from irc.bot import SingleServerIRCBot
+
+
+class IRCBot(SingleServerIRCBot):
+
+    def __init__(self, channel, nickname, server, port=6667):
+        super(IRCBot, self).__init__([(server, port)], nickname, nickname)
+        self.channel = channel
+
+    def on_nicknameinuse(self, connection, event):
+        connection.nick(connection.get_nickname() + "_")
+
+    def on_welcome(self, connection, event):
+        connection.join(self.channel)
+
+    def on_pubmsg(self, connection, event):
+        channel = self.channels[self.channel]
+        users_from_channel = channel.users()
+        connection.privmsg(self.channel, '%s disse: %s %s' % (
+            event.source.nick,
+            ' '.join(users_from_channel),
+            event.arguments[0])
+        )
+
+
+def main():
+    import sys
+    if len(sys.argv) != 4:
+        print("Usage: bot <server[:port]> <channel> <nickname>")
+        sys.exit(1)
+
+    s = sys.argv[1].split(":", 1)
+    server = s[0]
+    if len(s) == 2:
+        try:
+            port = int(s[1])
+        except ValueError:
+            print("Error: Erroneous port.")
+            sys.exit(1)
+    else:
+        port = 6667
+    channel = sys.argv[2]
+    nickname = sys.argv[3]
+
+    bot = IRCBot(channel, nickname, server, port)
+    bot.start()
+
+if __name__ == "__main__":
+    main()
