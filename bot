@@ -7,8 +7,8 @@ from irc.bot import SingleServerIRCBot
 
 class IRCBot(SingleServerIRCBot):
 
-    def __init__(self, channel, nickname, server, port=6667):
-        super(IRCBot, self).__init__([(server, port)], nickname, nickname)
+    def __init__(self, channel, nickname, server, server_password, port=6667):
+        super(IRCBot, self).__init__([(server, port, server_password)], nickname, nickname)
         self.channel = channel
 
     def on_nicknameinuse(self, connection, event):
@@ -47,7 +47,12 @@ def main():
     channel = sys.argv[2]
     nickname = sys.argv[3]
 
-    bot = IRCBot(channel, nickname, server, port)
+    try:
+        server_password = sys.argv[4]
+    except IndexError:
+        server_password = None
+
+    bot = IRCBot(channel, nickname, server, server_password, port)
     bot.start()
 
 if __name__ == "__main__":
