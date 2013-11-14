@@ -20,10 +20,11 @@ class IRCBot(SingleServerIRCBot):
     def on_pubmsg(self, connection, event):
         channel = self.channels[self.channel]
         users_from_channel = channel.users()
-        connection.privmsg(self.channel, '%s disse: %s %s' % (
+        connection.privmsg(self.channel, 'cc %s' % ' '.join(users_from_channel))
+        connection.privmsg(self.channel, "%s disse: '%s'" % (
             event.source.nick,
-            ' '.join(users_from_channel),
-            event.arguments[0])
+            event.arguments[0],
+            )
         )
 
 
