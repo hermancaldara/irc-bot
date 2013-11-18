@@ -28,12 +28,15 @@ class IRCBot(SingleServerIRCBot):
             message = message.strip()
 
         if user_target == self.connection.get_nickname() and message:
+            nickname_from_event = event.source.nick
             channel = self.channels[self.channel]
             users_from_channel = channel.users()
+            users_from_channel.remove(user_target)
+            users_from_channel.remove(nickname_from_event)
             connection.privmsg(self.channel, 'cc %s' % ' '.join(users_from_channel))
             connection.privmsg(
                 self.channel, "%s disse: '%s'" % (
-                    event.source.nick,
+                    nickname_from_event,
                     message,
                 )
             )
