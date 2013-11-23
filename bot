@@ -18,14 +18,7 @@ class IRCBot(SingleServerIRCBot):
         connection.join(self.channel)
 
     def on_pubmsg(self, connection, event):
-        try:
-            user_target, message = event.arguments[0].split(":", 1)
-        except ValueError:
-            user_target = None
-            message = None
-        else:
-            user_target = user_target.strip()
-            message = message.strip()
+        user_target, message = self._get_user_target_and_message(event)
 
         if user_target == self.connection.get_nickname() and message:
             nickname_from_event = event.source.nick
@@ -40,6 +33,19 @@ class IRCBot(SingleServerIRCBot):
                     message,
                 )
             )
+
+    @staticmethod
+    def _get_user_target_and_message(event):
+        try:
+            user_target, message = event.arguments[0].split(":", 1)
+        except ValueError:
+            user_target = None
+            message = None
+        else:
+            user_target = user_target.strip()
+            message = message.strip()
+
+        return user_target, message
 
 
 def main():
